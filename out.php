@@ -7,19 +7,7 @@ session_start();
 // Check if the user is logged in
 if (isset($_SESSION['email'])) {
     // User is logged in, fetch user data from the database
-// Database connection details
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "libarayinout";
-
-// Create a new MySQLi connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check the connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    include 'conn.php';
     $email = $_SESSION['email'];
 
     // Fetch user data from the database
@@ -40,11 +28,24 @@ if ($conn->connect_error) {
         $profileYear = $row['year'];
         $STATUS = 'OUT successfully';
 
-        // Insert data into the 'chek' table
-        $outQuery = "INSERT INTO quit (user_id, name, email, prn, branch, year, timestamp, STATUS) 
-                    VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)";
-        $stmt = $conn->prepare($outQuery);
-        $stmt->bind_param("issssss", $user_id, $profileName, $profileEmail, $profilePrn, $profileBranch, $profileYear, $STATUS);
+        // Get the current UTC timestamp
+        $utcTimestamp = gmdate('Y-m-d H:i:s');
+
+        // Convert UTC to IST
+        $utcDateTime = new DateTime($utcTimestamp, new DateTimeZone('UTC'));
+        $utcDateTime->setTimezone(new DateTimeZone('Asia/Kolkata'));
+        $istTimestamp = $utcDateTime->format('Y-m-d H:i:s');
+
+        // Insert data into the 'quit' table with IST timestamp
+       // Convert IST timestamp to separate date and time components
+$istDate = $utcDateTime->format('Y-m-d');
+$istTime = $utcDateTime->format('H:i:s');
+
+// Insert data into the 'quit' table with IST date and time components
+$outQuery = "INSERT INTO quit (user_id, name, email, prn, branch, year, quit_date, quit_time, STATUS) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+$stmt = $conn->prepare($outQuery);
+$stmt->bind_param("issssssss", $user_id, $profileName, $profileEmail, $profilePrn, $profileBranch, $profileYear, $istDate, $istTime, $STATUS);
 
         if ($stmt->execute()) {
             echo "<script>
@@ -54,7 +55,7 @@ if ($conn->connect_error) {
            
         } else {
             echo "<script>
-            alert('Somthing went Wrong.');
+            alert('Something went Wrong.');
         window.location.href = 'InOut.php'; 
         </script>";
         }
