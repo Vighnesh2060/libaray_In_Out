@@ -1,3 +1,4 @@
+
 <?php
 error_reporting(E_ERROR | E_PARSE);
 ini_set('display_errors', 0);
@@ -7,18 +8,8 @@ session_start();
 // Check if the user is logged in
 if (isset($_SESSION['email'])) {
     // User is logged in, fetch user data from the database
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "libarayinout";
+    include 'conn.php';
 
-// Create a new MySQLi connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check the connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
 
     $email = $_SESSION['email'];
 
@@ -70,12 +61,22 @@ window.location.href = 'InOut.php';
             z-index: 100;
             background-size: 30%;
           }
-          .log{
-            color: black;
-            text-decoration:none;
+          .log{ 
+           
+           font-size: 16px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background: linear-gradient(180deg, rgb(23, 63, 95) 5.52%, rgba(23, 63, 95, 0.58) 100%); /* Coral color */
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+            
           }
           .log:hover{
-            color:tomato;
+            background: linear-gradient(180deg, rgb(23, 63, 95) 5.52%, rgba(23, 63, 95, 0.58) 100%);
+            color: black; /* Gold color - Adjust as needed */
+
           }
           @media (max-width: 600px){
             #preloader {
@@ -220,14 +221,19 @@ window.location.href = 'InOut.php';
       }
 
       #profileBackBtn {
-          position: absolute;
-          top: 10px;
-          left: 10px;
-          outline:none;
-          border:none;
+        font-size: 16px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background: linear-gradient(180deg, rgb(23, 63, 95) 5.52%, rgba(23, 63, 95, 0.58) 100%);/* Coral color */
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
       }
       #profileBackBtn:hover{
-        color: tomato;
+        background: linear-gradient(180deg, rgb(23, 63, 95) 5.52%, rgba(23, 63, 95, 0.58) 100%);
+            color: black; /* Gold color - Adjust as needed */
+
       } 
 hr{
   width: 120%;
@@ -248,40 +254,41 @@ hr{
     </style>
 </head>
   <body>
-      <div id="preloader"></div>
-      <div class="in-out">
-          <div class="div"><hr>
-              <div id="profileIcon">
-                  <i class="fas fa-user" style="font-size: 32px; cursor: pointer;"></i>
-              </div>
-              <form action="In.php">
-              <button class="In" id="inButton" type="submit" >
-                  <div class="in-button"><div class="text-wrapper">IN</div></div>
-              </button>
-              </form>
-              <form action="out.php">
-              <button class="out" type="submit">
-                  <div class="out-button"><div class="text-wrapper-2">OUT</div></div>
-              </button>
-              </form>
-              <img class="dietlogo" src="img/dietlogo.png" />
-          </div>
-      </div>
+  <div id="preloader"></div>
+    <div class="in-out">
+        <div class="div">
+            <hr>
+            <div id="profileIcon">
+                <i class="fas fa-user" style="font-size: 32px; cursor: pointer;"></i>
+            </div>
+            <form action="In.php">
+                <button class="In" id="inButton" type="submit">
+                    <div class="in-button"><div class="text-wrapper">IN</div></div>
+                </button>
+            </form>
+            <form action="out.php">
+                <button class="out" id="outButton" type="submit">
+                    <div class="out-button"><div class="text-wrapper-2">OUT</div></div>
+                </button>
+            </form>
+            <img class="dietlogo" src="img/dietlogo.png" />
+        </div>
+    </div>
 
-  <form action="InOut.php">
-  <div id="profileContainer">
-      <button id="profileBackBtn">Back</button>
-      <div id="profileContent">
-        <h1>Profile</h1>
-        <p>Name: <?php echo $profileName; ?></p>
-        <p>Email: <?php echo $profileEmail; ?></p>
-        <p>PRN: <?php echo $profilePrn; ?></p>
-        <p>Branch: <?php echo $profileBranch; ?></p>
-        <p>Year: <?php echo $profileYear; ?></p>
-        <p><a href="index.html" class="log">Log out</a></p>
-      </div>
-  </div>
-</form>
+    <form action="InOut.php">
+        <div id="profileContainer">
+            <button id="profileBackBtn">Back</button>
+            <div id="profileContent">
+                <h1>Profile</h1>
+                <p>Name: <?php echo $profileName; ?></p>
+                <p>Email: <?php echo $profileEmail; ?></p>
+                <p>PRN: <?php echo $profilePrn; ?></p>
+                <p>Branch: <?php echo $profileBranch; ?></p>
+                <p>Year: <?php echo $profileYear; ?></p>
+                <p><a href="index.html" class="log">Log out</a></p>
+            </div>
+        </div>
+    </form>
   <script>
     var loader = document.getElementById("preloader");
 
@@ -314,35 +321,8 @@ hr{
     var inButton = document.querySelector(".in-out .in-button");
     inButton.addEventListener("click", pressInButton);
 </script>
-<script>
-  // Function to disable the "In" button
-function disableInButton() {
-  var inButton = document.querySelector(".in-out .in-button button");
-  inButton.disabled = true;
-}
-
-// Function to enable the "In" button
-
-function enableInButton() {
-  var inButton = document.querySelector(".in-out .in-button button");
-  inButton.disabled = false;
-}
-
-// Add an event listener for the "IN" button to disable it when clicked
-var inButtonElement = document.querySelector(".in-out .in-button button");
-inButtonElement.addEventListener("click", function() {
-  disableInButton();
-});
-
-// Add an event listener for the "OUT" button to enable the "In" button
-var outButtonElement = document.querySelector(".in-out .out-button button");
-outButtonElement.addEventListener("click", function() {
-  enableInButton();
-});
-
-</script>
-
 
   </body>
   </html>
- 
+
+
